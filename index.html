@@ -1,0 +1,231 @@
+<!DOCTYPE html>
+<html lang="cs">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>WanderBot – Tvůj cestovatelský průvodce</title>
+  <!-- Import moderního fontu Poppins -->
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet">
+  <style>
+    /* Global styles */
+    body {
+      margin: 0;
+      padding: 0;
+      background: linear-gradient(135deg, #74ebd5 0%, #ACB6E5 100%);
+      font-family: 'Poppins', sans-serif;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+    }
+    /* Chat container */
+    .chat-container {
+      background-color: #ffffff;
+      width: 450px;
+      max-width: 95%;
+      height: 650px;
+      border-radius: 16px;
+      box-shadow: 0 12px 30px rgba(0, 0, 0, 0.2);
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+    }
+    /* Chat header */
+    .chat-header {
+      background: linear-gradient(135deg, #2193b0, #6dd5ed);
+      padding: 20px;
+      text-align: center;
+      color: #fff;
+      font-size: 24px;
+      font-weight: 600;
+    }
+    /* Chat body */
+    .chat-body {
+      flex: 1;
+      padding: 20px;
+      background-color: #f7f9fc;
+      overflow-y: auto;
+    }
+    .message {
+      margin-bottom: 16px;
+      padding: 14px 18px;
+      border-radius: 10px;
+      font-size: 15px;
+      line-height: 1.5;
+      max-width: 80%;
+      opacity: 0;
+      animation: fadeInUp 0.5s forwards;
+    }
+    @keyframes fadeInUp {
+      from { opacity: 0; transform: translateY(20px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+    .message.bot {
+      background-color: #e0f7fa;
+      color: #333;
+      align-self: flex-start;
+      box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+    }
+    .message.user {
+      background-color: #2193b0;
+      color: #fff;
+      align-self: flex-end;
+      box-shadow: 0 2px 6px rgba(0, 0, 0, 0.2);
+    }
+    /* Chat footer */
+    .chat-footer {
+      padding: 16px;
+      background-color: #f7f9fc;
+      border-top: 1px solid #e0e0e0;
+    }
+    .options {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      gap: 10px;
+    }
+    .options button {
+      padding: 10px 20px;
+      background-color: #2193b0;
+      border: none;
+      border-radius: 8px;
+      color: #fff;
+      font-size: 16px;
+      cursor: pointer;
+      transition: background-color 0.3s ease, transform 0.2s ease;
+    }
+    .options button:hover {
+      background-color: #19769f;
+      transform: scale(1.05);
+    }
+  </style>
+</head>
+<body>
+  <div class="chat-container" id="chatContainer">
+    <div class="chat-header">
+      WanderBot – Tvůj cestovatelský průvodce
+    </div>
+    <div class="chat-body" id="chatBody">
+      <!-- Zprávy se budou zobrazovat zde -->
+    </div>
+    <div class="chat-footer">
+      <div class="options" id="options"></div>
+    </div>
+  </div>
+
+  <script>
+    // Definice interaktivních zpráv pro WanderBot
+    const messages = {
+      cs: {
+        main: {
+          text: "Ahoj! Já jsem WanderBot. Co bys dnes rád/a věděl/a?",
+          options: [
+            { label: "🌍 Doporučení destinací", next: "destinations" },
+            { label: "✈️ Plánování cesty", next: "tripPlan" },
+            { label: "📝 Cestovatelské tipy", next: "tips" },
+            { label: "❓ FAQ", next: "faq" },
+            { label: "⭐ Ohodnoť mě", next: "rating" }
+          ]
+        },
+        destinations: {
+          text: "Zde jsou doporučení na oblíbené destinace:\n- Paříž, Francie\n- Tokio, Japonsko\n- Barcelona, Španělsko",
+          options: [
+            { label: "↩️ Zpět", next: "main" }
+          ]
+        },
+        tripPlan: {
+          text: "Pro plánování cesty doporučuji zvolit datum, destinaci a zkontrolovat dostupnost letenek a ubytování.",
+          options: [
+            { label: "↩️ Zpět", next: "main" }
+          ]
+        },
+        tips: {
+          text: "Cestovatelské tipy:\n1. Bal svůj kufr chytře – méně je někdy více.\n2. Zjisti si místní zvyky a tradice.\n3. Vždy měj s sebou lokalizační aplikaci.",
+          options: [
+            { label: "↩️ Zpět", next: "main" }
+          ]
+        },
+        faq: {
+          text: "FAQ – Často kladené otázky:\n- Jak získat letenky levně?\n- Jak se vyhnout turistickým pastím?\n- Jakou místní měnu preferují?",
+          options: [
+            { label: "↩️ Zpět", next: "main" }
+          ]
+        },
+        rating: {
+          text: "Byla ti má odpověď užitečná?",
+          options: [
+            { label: "👍 Ano", next: "rating_yes" },
+            { label: "👎 Ne", next: "rating_no" }
+          ]
+        },
+        rating_yes: {
+          text: "Děkuji za pozitivní hodnocení! Užij si cestování.",
+          options: [
+            { label: "↩️ Zpět", next: "main" }
+          ]
+        },
+        rating_no: {
+          text: "Děkuji za tvou zpětnou vazbu, budu se snažit zlepšit.",
+          options: [
+            { label: "↩️ Zpět", next: "main" }
+          ]
+        }
+      }
+    };
+
+    let currentLang = "cs";
+    const chatBody = document.getElementById("chatBody");
+    const optionsContainer = document.getElementById("options");
+
+    // Funkce pro zobrazení zprávy
+    function displayMessage(message, sender = "bot") {
+      const messageElement = document.createElement("div");
+      messageElement.classList.add("message", sender);
+      messageElement.textContent = message.text;
+      chatBody.appendChild(messageElement);
+      chatBody.scrollTop = chatBody.scrollHeight;
+    }
+
+    // Funkce pro vytvoření tlačítek
+    function createOptions(options) {
+      optionsContainer.innerHTML = "";
+      options.forEach(option => {
+        const btn = document.createElement("button");
+        btn.textContent = option.label;
+        btn.addEventListener("click", () => handleOptionClick(option.next));
+        optionsContainer.appendChild(btn);
+      });
+    }
+
+    // Funkce pro zpracování kliknutí na tlačítko
+    function handleOptionClick(next) {
+      const currentMessages = messages[currentLang];
+      if (next === "main") {
+        showMainMenu();
+      } else {
+        showNextStep(currentMessages[next]);
+      }
+    }
+
+    // Zobrazení hlavního menu
+    function showMainMenu() {
+      chatBody.innerHTML = "";
+      optionsContainer.innerHTML = "";
+      const msg = messages[currentLang].main;
+      displayMessage({ text: msg.text }, "bot");
+      createOptions(msg.options);
+    }
+
+    // Zobrazení dalšího kroku
+    function showNextStep(step) {
+      chatBody.innerHTML = "";
+      optionsContainer.innerHTML = "";
+      displayMessage({ text: step.text }, "bot");
+      createOptions(step.options);
+    }
+
+    // Inicializace chatu
+    showMainMenu();
+  </script>
+</body>
+</html>
